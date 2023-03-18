@@ -1,23 +1,27 @@
 import {Router} from 'express'
 import {Todo} from '../models/todo'
 let todo:Todo[] =[]
+type requestparams={tid:string}
+type requestbody={name:string}
 const router=Router()
 
 router.get('/',(req,res)=>{
     res.status(200).json({todo:todo})
 })
 router.post('/todo',(req,res)=>{
-    console.log(req.body.name,'sending name form postman')
+    const body=req.body as requestbody
+    console.log(body.name,'sending name form postman')
     const todonew:Todo={
         id:new Date().getTime(),
-        name:req.body.name
+        name:body.name
     }
     todo.push(todonew)
     console.log(todo)
     res.status(200).json({message:'success'})
 })
 router.post('/delete/:tid',(req,res)=>{
-    const id=+req.params.tid
+    const param=req.params as requestparams
+    const id=+param.tid
     const find=todo.findIndex(e=>e.id===id)
     if(find===-1){
         return res.status(400).json({message:'item not found'})
@@ -28,7 +32,8 @@ router.post('/delete/:tid',(req,res)=>{
 
 })
 router.put('/edit/:tid',(req,res)=>{
-    const tid=+req.params.tid
+    const param=req.params as requestparams
+    const tid=+param.tid
     const find=todo.findIndex(e=>e.id===tid)
     if(find===-1){
         return res.status(400).json({message:'item not found'})
